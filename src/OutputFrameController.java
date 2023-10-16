@@ -50,7 +50,10 @@ public class OutputFrameController {
     private int playerOScore;
     private int roundsLeft;
     private boolean isBotFirst;
-    private Bot bot;
+    private String algorithm;
+    private MinimaxBot miniBot;
+    private HillClimbingBot hillBot;
+
 
 
     private static final int ROW = 8;
@@ -69,15 +72,20 @@ public class OutputFrameController {
      * @param isBotFirst True if bot is first, false otherwise.
      *
      */
-    void getInput(String name1, String name2, String rounds, boolean isBotFirst){
+    void getInput(String name1, String name2, String rounds, String algorithm, boolean isBotFirst){
         this.playerXName.setText(name1);
         this.playerOName.setText(name2);
         this.roundsLeftLabel.setText(rounds);
         this.roundsLeft = Integer.parseInt(rounds);
+        this.algorithm = algorithm;
         this.isBotFirst = isBotFirst;
 
         // Start bot
-        this.bot = new Bot();
+        if (algorithm.equals("Hill Climbing")) {
+            this.hillBot = new HillClimbingBot();
+        } else if (algorithm.equals("Minimax")) {
+            this.miniBot = new MinimaxBot();
+        }
         this.playerXTurn = !isBotFirst;
         if (this.isBotFirst) {
             this.moveBot();
@@ -353,16 +361,42 @@ public class OutputFrameController {
     }
 
     private void moveBot() {
-        int[] botMove = this.bot.move();
+        int[] botMove = new int[2];
+        if (algorithm.equals("Hill Climbing")) {
+            botMove = hillBot.move(getBoardState(), getPlayerID());
+        } else if (algorithm.equals("Minimax")) {
+            botMove = miniBot.move(getBoardState(), getPlayerID());
+        }
+
         int i = botMove[0];
         int j = botMove[1];
 
-        if (!this.buttons[i][j].getText().equals("")) {
+        if (!buttons[i][j].getText().isEmpty()) {
             new Alert(Alert.AlertType.ERROR, "Bot Invalid Coordinates. Exiting.").showAndWait();
             System.exit(1);
             return;
         }
 
-        this.selectedCoordinates(i, j);
+        selectedCoordinates(i, j);
+    }
+
+    private int[][] getBoardState() {
+        int[][] board = new int[ROW][COL];
+        for (int i = 0; i < ROW; i++) {
+            for (int j = 0; j < COL; j++) {
+                if (buttons[i][j].getText().equals("X")) {
+                    board[i][j] = 1;
+                } else if (buttons[i][j].getText().equals("O")) {
+                    board[i][j] = 2;
+                } else {
+                    board[i][j] = 0;
+                }
+            }
+        }
+        return board;
+    }
+
+    private int getPlayerID() {
+        return playerXTurn ? 1 : 2;
     }
 }

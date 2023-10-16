@@ -32,6 +32,9 @@ public class InputFrameController{
     @FXML
     private ComboBox<String> numberOfRounds;
 
+    @FXML
+    private ComboBox<String> algorithm;
+
 
     /**
      * Initialize the dropdown ComboBox with a list of items that are allowed to be selected.
@@ -43,8 +46,14 @@ public class InputFrameController{
         ObservableList<String> numberOfRoundsDropdown = FXCollections.observableArrayList(
                 "", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15",
                 "16", "17", "18", "19", "20", "21", "22", "23", "24", "25", "26", "27", "28");
+        ObservableList<String> algorithmDropdown = FXCollections.observableArrayList(
+                "Minimax", "Hill Climbing", "Minimax with PVS");
         this.numberOfRounds.setItems(numberOfRoundsDropdown);
-        this.numberOfRounds.getSelectionModel().select(0);
+        this.algorithm.setItems(algorithmDropdown);
+        this.numberOfRounds.getSelectionModel().select(5);
+        this.algorithm.getSelectionModel().select(0);
+        this.player1.setText("Human");
+        this.player2.setText("Bot");
     }
 
 
@@ -80,7 +89,7 @@ public class InputFrameController{
 
             // Get controller of output frame and pass input including player names and number of rounds chosen.
             OutputFrameController outputFC = loader.getController();
-            outputFC.getInput(this.player1.getText(), this.player2.getText(), this.numberOfRounds.getValue(), this.isBotFirst.isSelected());
+            outputFC.getInput(this.player1.getText(), this.player2.getText(), this.numberOfRounds.getValue(), this.algorithm.getValue() ,this.isBotFirst.isSelected());
 
             // Open the new frame.
             Stage secondaryStage = new Stage();
@@ -102,6 +111,7 @@ public class InputFrameController{
         String playerX = this.player1.getText();
         String playerO = this.player2.getText();
         String roundNumber = this.numberOfRounds.getValue();
+        String algorithm = this.algorithm.getValue();
 
         if (playerX.length() == 0) {
             new Alert(Alert.AlertType.ERROR, "Player 1 name is blank.").showAndWait();
@@ -120,6 +130,11 @@ public class InputFrameController{
 
         if (roundNumber.length() == 0) {
             new Alert(Alert.AlertType.ERROR, "Number of rounds dropdown menu is blank.").showAndWait();
+            return false;
+        }
+
+        if (algorithm.length() == 0) {
+            new Alert(Alert.AlertType.ERROR, "Algorithm dropdown menu is blank.").showAndWait();
             return false;
         }
 
