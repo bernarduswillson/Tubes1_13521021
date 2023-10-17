@@ -33,7 +33,10 @@ public class InputFrameController{
     private ComboBox<String> numberOfRounds;
 
     @FXML
-    private ComboBox<String> algorithm;
+    private ComboBox<String> algorithm1;
+
+    @FXML
+    private ComboBox<String> algorithm2;
 
 
     /**
@@ -47,11 +50,13 @@ public class InputFrameController{
                 "", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15",
                 "16", "17", "18", "19", "20", "21", "22", "23", "24", "25", "26", "27", "28");
         ObservableList<String> algorithmDropdown = FXCollections.observableArrayList(
-                "Minimax", "Hill Climbing", "Minimax with PVS");
+                "Human", "Minimax", "Hill Climbing", "Genetic");
         this.numberOfRounds.setItems(numberOfRoundsDropdown);
-        this.algorithm.setItems(algorithmDropdown);
+        this.algorithm1.setItems(algorithmDropdown);
+        this.algorithm2.setItems(algorithmDropdown);
         this.numberOfRounds.getSelectionModel().select(5);
-        this.algorithm.getSelectionModel().select(0);
+        this.algorithm1.getSelectionModel().select(0);
+        this.algorithm2.getSelectionModel().select(1);
         this.player1.setText("Human");
         this.player2.setText("Bot");
     }
@@ -89,7 +94,7 @@ public class InputFrameController{
 
             // Get controller of output frame and pass input including player names and number of rounds chosen.
             OutputFrameController outputFC = loader.getController();
-            outputFC.getInput(this.player1.getText(), this.player2.getText(), this.numberOfRounds.getValue(), this.algorithm.getValue() ,this.isBotFirst.isSelected());
+            outputFC.getInput(this.player1.getText(), this.player2.getText(), this.numberOfRounds.getValue(), this.algorithm1.getValue() , this.algorithm2.getValue(), this.isBotFirst.isSelected());
 
             // Open the new frame.
             Stage secondaryStage = new Stage();
@@ -111,7 +116,8 @@ public class InputFrameController{
         String playerX = this.player1.getText();
         String playerO = this.player2.getText();
         String roundNumber = this.numberOfRounds.getValue();
-        String algorithm = this.algorithm.getValue();
+        String algorithm1 = this.algorithm1.getValue();
+        String algorithm2 = this.algorithm2.getValue();
 
         if (playerX.length() == 0) {
             new Alert(Alert.AlertType.ERROR, "Player 1 name is blank.").showAndWait();
@@ -133,7 +139,12 @@ public class InputFrameController{
             return false;
         }
 
-        if (algorithm.length() == 0) {
+        if (algorithm1.length() == 0) {
+            new Alert(Alert.AlertType.ERROR, "Algorithm dropdown menu is blank.").showAndWait();
+            return false;
+        }
+
+        if (algorithm2.length() == 0) {
             new Alert(Alert.AlertType.ERROR, "Algorithm dropdown menu is blank.").showAndWait();
             return false;
         }

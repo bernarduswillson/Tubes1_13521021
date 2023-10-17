@@ -1,4 +1,5 @@
-public class MinimaxBot {
+public class MinimaxBot extends Bot {
+    @Override
     public int[] move(int[][] board, int player) {
         int[] move = new int[2];
         int bestScore = Integer.MIN_VALUE;
@@ -26,9 +27,9 @@ public class MinimaxBot {
     }
 
     private int minimax(int[][] board, int depth, boolean isMaximizing, int alpha, int beta, int player, int opponent) {
-        int result = checkWinner(board, player, opponent);
+        int result = evaluateBoard(board, player, opponent);
 
-        if (result != 0 || depth == 4) {
+        if (depth == 4) {
             return result;
         }
 
@@ -78,46 +79,11 @@ public class MinimaxBot {
         }
     }
 
-    private int checkWinner(int[][] board, int player, int opponent) {
+    @Override
+    public int evaluateBoard(int[][] board, int player, int opponent) {
         int playerCount = countMarks(board, player);
         int opponentCount = countMarks(board, opponent);
 
         return playerCount - opponentCount;
-    }
-
-    private int countMarks(int[][] board, int player) {
-        int count = 0;
-        for (int[] row : board) {
-            for (int cell : row) {
-                if (cell == player) {
-                    count++;
-                }
-            }
-        }
-        return count;
-    }
-
-    private void captureMarks(int[][] board, int row, int col, int player, int opponent) {
-        int[][] directions = { { -1, -1 }, { -1, 0 }, { -1, 1 }, { 0, -1 }, { 0, 1 }, { 1, -1 }, { 1, 0 }, { 1, 1 } };
-        for (int[] dir : directions) {
-            int dx = dir[0];
-            int dy = dir[1];
-            int newRow = row + dx;
-            int newCol = col + dy;
-
-            while (newRow >= 0 && newRow < 8 && newCol >= 0 && newCol < 8 && board[newRow][newCol] == opponent) {
-                board[newRow][newCol] = player;
-                newRow += dx;
-                newCol += dy;
-            }
-        }
-    }
-
-    private int[][] copyBoard(int[][] board) {
-        int[][] copy = new int[8][8];
-        for (int i = 0; i < 8; i++) {
-            System.arraycopy(board[i], 0, copy[i], 0, 8);
-        }
-        return copy;
     }
 }
