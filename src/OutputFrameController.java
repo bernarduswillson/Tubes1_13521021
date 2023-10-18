@@ -267,7 +267,7 @@ public class OutputFrameController {
                 this.playerXScore++;
 
                 this.updateGameBoard(i, j);
-                this.playerXTurn = true;
+                this.playerXTurn = false;
 
                 if (!is2First) {
                     this.roundsLeft--; // Decrement the number of rounds left after both Player X & Player O have
@@ -278,7 +278,29 @@ public class OutputFrameController {
                 if (!is2First && this.roundsLeft == 0) { // Game has terminated.
                     this.endOfGame(); // Determine & announce the winner.
                 }
-            } else if (!is1Human && !is2Human) {
+            } else if (!this.playerXTurn && is2Human) {
+                this.playerXBoxPane.setStyle("-fx-background-color: WHITE; -fx-border-color: #D3D3D3;");
+                this.playerOBoxPane.setStyle("-fx-background-color: #90EE90; -fx-border-color: #D3D3D3;");
+                this.buttons[i][j].setText("O");
+                this.playerOScore++;
+
+                this.updateGameBoard(i, j);
+                this.playerXTurn = true;
+
+                if (is2First) {
+                    this.roundsLeft--; // Decrement the number of rounds left after both Player X & Player O have
+                                       // played.
+                    this.roundsLeftLabel.setText(String.valueOf(this.roundsLeft));
+                }
+
+                if (is2First && this.roundsLeft == 0) {
+                    this.endOfGame();
+                }
+
+                // Bot's turn
+                this.moveBot();
+            } 
+            else if (!is1Human && !is2Human) {
                 // bot 1 turn
                 if (this.playerXTurn) {
                     this.playerXBoxPane.setStyle("-fx-background-color: #90EE90; -fx-border-color: #D3D3D3;");
