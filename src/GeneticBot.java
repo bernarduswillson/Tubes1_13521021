@@ -2,7 +2,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-public class Genetic2Bot extends Bot {
+public class GeneticBot extends Bot {
 
     private int ROW;
     private int COL;
@@ -10,7 +10,7 @@ public class Genetic2Bot extends Bot {
     private String opponent;
     private int botScore;
 
-    public Genetic2Bot(int row, int col, String bot) {
+    public GeneticBot(int row, int col, String bot) {
         this.ROW = row;
         this.COL = col;
         this.bot = bot;

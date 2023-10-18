@@ -55,6 +55,10 @@ public class OutputFrameController {
     private HillClimbingBot hillBot1;
     private MinimaxBot miniBot2;
     private HillClimbingBot hillBot2;
+    private SimulatedAnnealingBot simulatedAnnealingBot1;
+    private SimulatedAnnealingBot simulatedAnnealingBot2;
+    private GeneticBot geneticBot1;
+    private GeneticBot geneticBot2;
 
     private static final int ROW = 8;
     private static final int COL = 8;
@@ -92,6 +96,10 @@ public class OutputFrameController {
             this.hillBot1 = new HillClimbingBot();
         } else if (algorithm1.equals("Minimax")) {
             this.miniBot1 = new MinimaxBot();
+        } else if (algorithm1.equals("Simulated Annealing")) {
+            this.simulatedAnnealingBot1 = new SimulatedAnnealingBot();
+        } else if (algorithm1.equals("Genetic")) {
+            this.geneticBot1 = new GeneticBot(8, 8, "X");
         }
 
         // Start bot for Player 2 (O)
@@ -99,6 +107,10 @@ public class OutputFrameController {
             this.hillBot2 = new HillClimbingBot();
         } else if (algorithm2.equals("Minimax")) {
             this.miniBot2 = new MinimaxBot();
+        } else if (algorithm2.equals("Simulated Annealing")) {
+            this.simulatedAnnealingBot2 = new SimulatedAnnealingBot();
+        } else if (algorithm2.equals("Genetic")) {
+            this.geneticBot2 = new GeneticBot(8, 8, "O");
         }
 
         // Set the first player's turn based on isBotFirst
@@ -380,6 +392,10 @@ public class OutputFrameController {
                 botMove = hillBot1.move(getBoardState(), 1); // Use hillBot1 for Player 1
             } else if (algorithm1.equals("Minimax")) {
                 botMove = miniBot1.move(getBoardState(), 1); // Use miniBot1 for Player 1
+            } else if (algorithm1.equals("Simulated Annealing")) {
+                botMove = simulatedAnnealingBot1.move(getBoardState(), 1); // Use simulatedAnnealingBot for Player 2
+            } else if (algorithm1.equals("Genetic")) {
+                botMove = geneticBot1.move(getBoardState(), 1); // Use simulatedAnnealingBot for Player 2
             } else {
                 botMove = new int[] { -1, -1 }; // Handle unknown algorithm
             }
@@ -388,6 +404,10 @@ public class OutputFrameController {
                 botMove = hillBot2.move(getBoardState(), 2); // Use hillBot2 for Player 2
             } else if (algorithm2.equals("Minimax")) {
                 botMove = miniBot2.move(getBoardState(), 2); // Use miniBot2 for Player 2
+            } else if (algorithm2.equals("Simulated Annealing")) {
+                botMove = simulatedAnnealingBot2.move(getBoardState(), 2); // Use simulatedAnnealingBot for Player 2
+            } else if (algorithm1.equals("Genetic")) {
+                botMove = geneticBot2.move(getBoardState(), 2); // Use simulatedAnnealingBot for Player 2
             } else {
                 botMove = new int[] { -1, -1 }; // Handle unknown algorithm
             }

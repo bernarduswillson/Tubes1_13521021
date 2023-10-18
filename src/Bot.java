@@ -8,7 +8,7 @@ public abstract class Bot {
     }
 
     protected void captureMarks(int[][] board, int row, int col, int player, int opponent) {
-        int[][] directions = {{-1, -1}, {-1, 0}, {-1, 1}, {0, -1}, {0, 1}, {1, -1}, {1, 0}, {1, 1}};
+        int[][] directions = {{-1, 0}, {0, -1}, {0, 1}, {1, 0}};
         for (int[] dir : directions) {
             int dx = dir[0];
             int dy = dir[1];

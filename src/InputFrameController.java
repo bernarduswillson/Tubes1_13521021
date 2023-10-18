@@ -50,7 +50,7 @@ public class InputFrameController{
                 "", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15",
                 "16", "17", "18", "19", "20", "21", "22", "23", "24", "25", "26", "27", "28");
         ObservableList<String> algorithmDropdown = FXCollections.observableArrayList(
-                "Human", "Minimax", "Hill Climbing", "Genetic");
+                "Human", "Minimax", "Hill Climbing", "Simulated Annealing", "Genetic");
         this.numberOfRounds.setItems(numberOfRoundsDropdown);
         this.algorithm1.setItems(algorithmDropdown);
         this.algorithm2.setItems(algorithmDropdown);
