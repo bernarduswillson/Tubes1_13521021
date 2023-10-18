@@ -4,48 +4,41 @@ import java.util.Random;
 
 public class GeneticBot extends Bot {
 
-    private int ROW;
-    private int COL;
+    private int rows;
+    private int cols;
     private String bot;
     private String opponent;
-    private int botScore;
+
 
     public GeneticBot(int row, int col, String bot) {
-        this.ROW = row;
-        this.COL = col;
+        this.rows = row;
+        this.cols = col;
         this.bot = bot;
         this.opponent = bot.equals("O") ? "X" : "O";
         System.out.println("Bot: " + bot);
         System.out.println("Opponent: " + opponent);
     }
 
-    public void updateScore(int botScore) {
-        this.botScore = botScore;
-    }
-
     @Override
     protected int[] move(int[][] board, int player) {
-        List<int[]> population = generateInitialPopulation(100);
+        List<int[]> population = generateInitialPopulation(50);
         int generation = 0;
 
-        while (generation < 100) {
+        while (generation < 50) {
             List<int[]> offspring = generateOffspring(population);
             population.addAll(offspring);
-            population = selectFittestPopulation(population, 100);
+            population = selectFittestPopulation(population, 50);
             generation++;
         }
 
-        return getBestMove(population,board);
+        return getBestMove(population,board,player);
     }
 
     @Override
     protected int evaluateBoard(int[][] board, int player, int opponent) {
-        // Your custom evaluation logic goes here
-        // This is a placeholder, replace it with your actual logic
         int playerScore = countMarks(board, player);
-        int opponentScore = countMarks(board, opponent);
 
-        return playerScore - opponentScore;
+        return playerScore;
     }
 
     private List<int[]> generateInitialPopulation(int size) {
@@ -61,8 +54,8 @@ public class GeneticBot extends Bot {
 
     private int[] generateRandomMove() {
         Random random = new Random();
-        int row = random.nextInt(ROW);
-        int col = random.nextInt(COL);
+        int row = random.nextInt(rows);
+        int col = random.nextInt(cols);
         return new int[]{row, col};
     }
 
@@ -102,39 +95,45 @@ public class GeneticBot extends Bot {
         double mutationRate = 0.1;
 
         if (random.nextDouble() < mutationRate) {
-            move[0] = random.nextInt(ROW);
-            move[1] = random.nextInt(COL);
+            move[0] = random.nextInt(rows);
+            move[1] = random.nextInt(cols);
         }
     }
 
     private List<int[]> selectFittestPopulation(List<int[]> population, int size) {
         List<int[]> fittestPopulation = new ArrayList<>(population);
-        fittestPopulation.sort((m1, m2) -> utilityFunction(m2) - utilityFunction(m1));
+        fittestPopulation.sort((m1, m2) -> fitnessFunction(m2) - fitnessFunction(m1));
         return fittestPopulation.subList(0, size);
     }
-
-    private int utilityFunction(int[] move) {
-        int row = move[0];
-        int col = move[1];
-        int utility = 100;
-        
-
-        return utility;
-    }
-
     private boolean isTileClear(int[][] board, int row, int col) {
         return board[row][col] == 0;
     }
 
-    private int[] getBestMove(List<int[]> population, int[][] board) {
+    private int fitnessFunction(int[] move) {
+        int[][] board = new int[rows][cols];
+        int player = bot.equals("O") ? 1 : 2;
+        int score = 0;
+
+        for (int[] row : board) {
+            for (int cell : row) {
+                if (cell == player) {
+                    score++;
+                }
+            }
+        }
+
+        return score;
+    }
+    private int[] getBestMove(List<int[]> population, int[][] board,int player) {
         int[] bestMove = population.get(0);
         int bestOutcome = Integer.MIN_VALUE;
+        int opponent = (player == 1) ? 2 : 1;
     
         for (int[] move : population) {
             if (!isTileClear(board, move[0], move[1])) {
                 continue;
             }
-            int outcome = utilityFunction(move);
+            int outcome = evaluateBoard(board, player,opponent);
             if (outcome > bestOutcome) {
                 bestOutcome = outcome;
                 bestMove = move;
