@@ -90,10 +90,8 @@ public class OutputFrameController {
         // Start bot for Player 1 (X)
         if (algorithm1.equals("Human")) {
             this.is1Human = true;
-        } else if (algorithm1.equals("Hill Climbing")) {
-            this.bot1 = new HillClimbingBot();
         } else if (algorithm1.equals("Minimax")) {
-            this.bot1 = new MinimaxBot();
+            this.bot1 = new MinimaxBot(Integer.parseInt(rounds));
         } else if (algorithm1.equals("Simulated Annealing")) {
             this.bot1 = new SimulatedAnnealingBot();
         } else if (algorithm1.equals("Genetic")) {
@@ -103,10 +101,8 @@ public class OutputFrameController {
         // Start bot for Player 2 (O)
         if (algorithm2.equals("Human")) {
             this.is2Human = true;
-        } else if (algorithm2.equals("Hill Climbing")) {
-            this.bot2 = new HillClimbingBot();
         } else if (algorithm2.equals("Minimax")) {
-            this.bot2 = new MinimaxBot();
+            this.bot2 = new MinimaxBot(Integer.parseInt(rounds));
         } else if (algorithm2.equals("Simulated Annealing")) {
             this.bot2 = new SimulatedAnnealingBot();
         } else if (algorithm2.equals("Genetic")) {
