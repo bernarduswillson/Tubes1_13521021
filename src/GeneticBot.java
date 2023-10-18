@@ -4,21 +4,6 @@ import java.util.Random;
 
 public class GeneticBot extends Bot {
 
-    private int rows;
-    private int cols;
-    private String bot;
-    private String opponent;
-
-
-    public GeneticBot(int row, int col, String bot) {
-        this.rows = row;
-        this.cols = col;
-        this.bot = bot;
-        this.opponent = bot.equals("O") ? "X" : "O";
-        System.out.println("Bot: " + bot);
-        System.out.println("Opponent: " + opponent);
-    }
-
     @Override
     protected int[] move(int[][] board, int player) {
         List<int[]> population = generateInitialPopulation(50);
@@ -27,7 +12,7 @@ public class GeneticBot extends Bot {
         while (generation < 50) {
             List<int[]> offspring = generateOffspring(population);
             population.addAll(offspring);
-            population = selectFittestPopulation(population, 50);
+            population = selectFittestPopulation(population, 50, player);
             generation++;
         }
 
@@ -54,8 +39,8 @@ public class GeneticBot extends Bot {
 
     private int[] generateRandomMove() {
         Random random = new Random();
-        int row = random.nextInt(rows);
-        int col = random.nextInt(cols);
+        int row = random.nextInt(8);
+        int col = random.nextInt(8);
         return new int[]{row, col};
     }
 
@@ -83,7 +68,6 @@ public class GeneticBot extends Bot {
         int[] child = new int[2];
         Random random = new Random();
 
-        // Randomly select genes from parents
         child[0] = random.nextBoolean() ? parent1[0] : parent2[0];
         child[1] = random.nextBoolean() ? parent1[1] : parent2[1];
 
@@ -95,23 +79,23 @@ public class GeneticBot extends Bot {
         double mutationRate = 0.1;
 
         if (random.nextDouble() < mutationRate) {
-            move[0] = random.nextInt(rows);
-            move[1] = random.nextInt(cols);
+            move[0] = random.nextInt(8);
+            move[1] = random.nextInt(8);
         }
     }
 
-    private List<int[]> selectFittestPopulation(List<int[]> population, int size) {
+    private List<int[]> selectFittestPopulation(List<int[]> population, int size, int player) {
         List<int[]> fittestPopulation = new ArrayList<>(population);
-        fittestPopulation.sort((m1, m2) -> fitnessFunction(m2) - fitnessFunction(m1));
+        fittestPopulation.sort((m1, m2) -> fitnessFunction(m2, player) - fitnessFunction(m1, player));
         return fittestPopulation.subList(0, size);
     }
+
     private boolean isTileClear(int[][] board, int row, int col) {
         return board[row][col] == 0;
     }
 
-    private int fitnessFunction(int[] move) {
-        int[][] board = new int[rows][cols];
-        int player = bot.equals("O") ? 1 : 2;
+    private int fitnessFunction(int[] move, int player) {
+        int[][] board = new int[8][8];
         int score = 0;
 
         for (int[] row : board) {
@@ -124,7 +108,8 @@ public class GeneticBot extends Bot {
 
         return score;
     }
-    private int[] getBestMove(List<int[]> population, int[][] board,int player) {
+
+    private int[] getBestMove(List<int[]> population, int[][] board, int player) {
         int[] bestMove = population.get(0);
         int bestOutcome = Integer.MIN_VALUE;
         int opponent = (player == 1) ? 2 : 1;

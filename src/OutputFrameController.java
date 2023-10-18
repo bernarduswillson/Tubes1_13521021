@@ -95,7 +95,7 @@ public class OutputFrameController {
         } else if (algorithm1.equals("Simulated Annealing")) {
             this.bot1 = new SimulatedAnnealingBot();
         } else if (algorithm1.equals("Genetic")) {
-            this.bot1 = new GeneticBot(8, 8, "X");
+            this.bot1 = new GeneticBot();
         }
 
         // Start bot for Player 2 (O)
@@ -106,7 +106,7 @@ public class OutputFrameController {
         } else if (algorithm2.equals("Simulated Annealing")) {
             this.bot2 = new SimulatedAnnealingBot();
         } else if (algorithm2.equals("Genetic")) {
-            this.bot2 = new GeneticBot(8, 8, "O");
+            this.bot2 = new GeneticBot();
         }
 
         // Set the first player's turn based on is2First

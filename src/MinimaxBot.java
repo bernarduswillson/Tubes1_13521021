@@ -82,7 +82,6 @@ public class MinimaxBot extends Bot {
                         int[][] tempBoard = copyBoard(board);
                         tempBoard[i][j] = player;
 
-                        // Capture opponent's marks
                         captureMarks(tempBoard, i, j, player, opponent);
 
                         int score = minimax(tempBoard, depth + 1, false, alpha, beta, player, opponent);
@@ -90,7 +89,7 @@ public class MinimaxBot extends Bot {
                         alpha = Math.max(alpha, bestScore);
 
                         if (beta <= alpha) {
-                            break; // Beta cutoff
+                            break;
                         }
                     }
                 }
