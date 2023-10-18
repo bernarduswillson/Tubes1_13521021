@@ -35,7 +35,7 @@ public class GeneticBot extends Bot {
             generation++;
         }
 
-        return getBestMove(population);
+        return getBestMove(population,board);
     }
 
     @Override
@@ -117,19 +117,30 @@ public class GeneticBot extends Bot {
         int row = move[0];
         int col = move[1];
         int utility = 100;
+        
 
         return utility;
     }
 
-    private int[] getBestMove(List<int[]> population) {
-        int[] bestMove = population.get(0);
+    private boolean isTileClear(int[][] board, int row, int col) {
+        return board[row][col] == 0;
+    }
 
+    private int[] getBestMove(List<int[]> population, int[][] board) {
+        int[] bestMove = population.get(0);
+        int bestOutcome = Integer.MIN_VALUE;
+    
         for (int[] move : population) {
-            if (utilityFunction(move) > utilityFunction(bestMove)) {
+            if (!isTileClear(board, move[0], move[1])) {
+                continue;
+            }
+            int outcome = utilityFunction(move);
+            if (outcome > bestOutcome) {
+                bestOutcome = outcome;
                 bestMove = move;
             }
         }
-
+    
         return bestMove;
     }
 }

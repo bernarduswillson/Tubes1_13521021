@@ -406,7 +406,7 @@ public class OutputFrameController {
                 botMove = miniBot2.move(getBoardState(), 2); // Use miniBot2 for Player 2
             } else if (algorithm2.equals("Simulated Annealing")) {
                 botMove = simulatedAnnealingBot2.move(getBoardState(), 2); // Use simulatedAnnealingBot for Player 2
-            } else if (algorithm1.equals("Genetic")) {
+            } else if (algorithm2.equals("Genetic")) {
                 botMove = geneticBot2.move(getBoardState(), 2); // Use simulatedAnnealingBot for Player 2
             } else {
                 botMove = new int[] { -1, -1 }; // Handle unknown algorithm
@@ -415,6 +415,9 @@ public class OutputFrameController {
 
         int i = botMove[0];
         int j = botMove[1];
+
+        System.out.println(i);
+        System.out.println(j);
 
         if (i >= 0 && i < ROW && j >= 0 && j < COL && buttons[i][j].getText().isEmpty()) {
             selectedCoordinates(i, j);
@@ -458,6 +461,7 @@ public class OutputFrameController {
             int j = botMove1[1];
             int k = botMove2[0];
             int l = botMove2[1];
+
 
             if (i >= 0 && i < ROW && j >= 0 && j < COL && buttons[i][j].getText().isEmpty()) {
                 selectedCoordinates(i, j);
