@@ -13,6 +13,10 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.RowConstraints;
 
+import javafx.animation.PauseTransition;
+import javafx.util.Duration;
+import javafx.application.Platform;
+
 import java.io.IOException;
 
 /**
@@ -48,17 +52,13 @@ public class OutputFrameController {
     private int playerXScore;
     private int playerOScore;
     private int roundsLeft;
-    private boolean isBotFirst;
+    private boolean is2First;
     private String algorithm1;
     private String algorithm2;
-    private MinimaxBot miniBot1;
-    private HillClimbingBot hillBot1;
-    private MinimaxBot miniBot2;
-    private HillClimbingBot hillBot2;
-    private SimulatedAnnealingBot simulatedAnnealingBot1;
-    private SimulatedAnnealingBot simulatedAnnealingBot2;
-    private GeneticBot geneticBot1;
-    private GeneticBot geneticBot2;
+    private Bot bot1;
+    private Bot bot2;
+    private boolean is1Human;
+    private boolean is2Human;
 
     private static final int ROW = 8;
     private static final int COL = 8;
@@ -70,54 +70,54 @@ public class OutputFrameController {
      * and the number of rounds played to be rounds. This input is received from
      * the input frame and is output in the score board of the output frame.
      *
-     * @param name1      Name of Player 1 (Player).
-     * @param name2      Name of Player 2 (Bot).
-     * @param rounds     The number of rounds chosen to be played.
-     * @param isBotFirst True if bot is first, false otherwise.
+     * @param name1    Name of Player 1 (Player).
+     * @param name2    Name of Player 2 (Bot).
+     * @param rounds   The number of rounds chosen to be played.
+     * @param is2First True if bot is first, false otherwise.
      *
      */
-    void getInput(String name1, String name2, String rounds, String algorithm1, String algorithm2, boolean isBotFirst) {
+    void getInput(String name1, String name2, String rounds, String algorithm1, String algorithm2, boolean is2First) {
         this.playerXName.setText(name1);
         this.playerOName.setText(name2);
         this.roundsLeftLabel.setText(rounds);
         this.roundsLeft = Integer.parseInt(rounds);
         this.algorithm1 = algorithm1;
         this.algorithm2 = algorithm2;
-        this.isBotFirst = isBotFirst;
-
-        if (!(algorithm1.equals("Human"))) {
-            this.miniBot1 = new MinimaxBot();
-            this.miniBot2 = new MinimaxBot();
-            playBotVsBotGame();
-        }
+        this.is2First = is2First;
+        this.is1Human = false;
+        this.is2Human = false;
 
         // Start bot for Player 1 (X)
-        if (algorithm1.equals("Hill Climbing")) {
-            this.hillBot1 = new HillClimbingBot();
+        if (algorithm1.equals("Human")) {
+            this.is1Human = true;
+        } else if (algorithm1.equals("Hill Climbing")) {
+            this.bot1 = new HillClimbingBot();
         } else if (algorithm1.equals("Minimax")) {
-            this.miniBot1 = new MinimaxBot();
+            this.bot1 = new MinimaxBot();
         } else if (algorithm1.equals("Simulated Annealing")) {
-            this.simulatedAnnealingBot1 = new SimulatedAnnealingBot();
+            this.bot1 = new SimulatedAnnealingBot();
         } else if (algorithm1.equals("Genetic")) {
-            this.geneticBot1 = new GeneticBot(8, 8, "X");
+            this.bot1 = new GeneticBot(8, 8, "X");
         }
 
         // Start bot for Player 2 (O)
-        if (algorithm2.equals("Hill Climbing")) {
-            this.hillBot2 = new HillClimbingBot();
+        if (algorithm2.equals("Human")) {
+            this.is2Human = true;
+        } else if (algorithm2.equals("Hill Climbing")) {
+            this.bot2 = new HillClimbingBot();
         } else if (algorithm2.equals("Minimax")) {
-            this.miniBot2 = new MinimaxBot();
+            this.bot2 = new MinimaxBot();
         } else if (algorithm2.equals("Simulated Annealing")) {
-            this.simulatedAnnealingBot2 = new SimulatedAnnealingBot();
+            this.bot2 = new SimulatedAnnealingBot();
         } else if (algorithm2.equals("Genetic")) {
-            this.geneticBot2 = new GeneticBot(8, 8, "O");
+            this.bot2 = new GeneticBot(8, 8, "O");
         }
 
-        // Set the first player's turn based on isBotFirst
-        this.playerXTurn = !isBotFirst;
+        // Set the first player's turn based on is2First
+        this.playerXTurn = !is2First;
 
         // If the first player is a bot, make the bot's move
-        if (isBotFirst) {
+        if (is2First || !(is1Human)) {
             moveBot();
         }
     }
@@ -205,12 +205,21 @@ public class OutputFrameController {
      *
      */
     private void selectedCoordinates(int i, int j) {
+        if (this.roundsLeft == 0) {
+            // Disable the game board buttons to prevent further moves
+            for (int a = 0; a < ROW; a++) {
+                for (int b = 0; b < COL; b++) {
+                    this.buttons[a][b].setDisable(true);
+                }
+            }
+            return;
+        }
         // Invalid when a button with an X or an O is clicked.
         if (!this.buttons[i][j].getText().equals(""))
             new Alert(Alert.AlertType.ERROR, "Invalid coordinates: Try again!").showAndWait();
         // Button must be blank.
         else {
-            if (this.playerXTurn) {
+            if (this.playerXTurn && is1Human) {
                 // Changed background color to green to indicate next player's turn.
                 this.playerXBoxPane.setStyle("-fx-background-color: WHITE; -fx-border-color: #D3D3D3;");
                 this.playerOBoxPane.setStyle("-fx-background-color: #90EE90; -fx-border-color: #D3D3D3;");
@@ -221,19 +230,19 @@ public class OutputFrameController {
                 this.updateGameBoard(i, j);
                 this.playerXTurn = false; // Alternate player's turn.
 
-                if (isBotFirst) {
+                if (is2First) {
                     this.roundsLeft--; // Decrement the number of rounds left after both Player X & Player O have
                                        // played.
                     this.roundsLeftLabel.setText(String.valueOf(this.roundsLeft));
                 }
 
-                if (isBotFirst && this.roundsLeft == 0) {
+                if (is2First && this.roundsLeft == 0) {
                     this.endOfGame();
                 }
 
                 // Bot's turn
                 this.moveBot();
-            } else {
+            } else if (!this.playerXTurn && is1Human) {
                 this.playerXBoxPane.setStyle("-fx-background-color: #90EE90; -fx-border-color: #D3D3D3;");
                 this.playerOBoxPane.setStyle("-fx-background-color: WHITE; -fx-border-color: #D3D3D3;");
                 this.buttons[i][j].setText("O");
@@ -242,14 +251,77 @@ public class OutputFrameController {
                 this.updateGameBoard(i, j);
                 this.playerXTurn = true;
 
-                if (!isBotFirst) {
+                if (!is2First) {
                     this.roundsLeft--; // Decrement the number of rounds left after both Player X & Player O have
                                        // played.
                     this.roundsLeftLabel.setText(String.valueOf(this.roundsLeft));
                 }
 
-                if (!isBotFirst && this.roundsLeft == 0) { // Game has terminated.
+                if (!is2First && this.roundsLeft == 0) { // Game has terminated.
                     this.endOfGame(); // Determine & announce the winner.
+                }
+            } else if (this.playerXTurn && is2Human) {
+                this.playerXBoxPane.setStyle("-fx-background-color: #90EE90; -fx-border-color: #D3D3D3;");
+                this.playerOBoxPane.setStyle("-fx-background-color: WHITE; -fx-border-color: #D3D3D3;");
+                this.buttons[i][j].setText("X");
+                this.playerXScore++;
+
+                this.updateGameBoard(i, j);
+                this.playerXTurn = true;
+
+                if (!is2First) {
+                    this.roundsLeft--; // Decrement the number of rounds left after both Player X & Player O have
+                                       // played.
+                    this.roundsLeftLabel.setText(String.valueOf(this.roundsLeft));
+                }
+
+                if (!is2First && this.roundsLeft == 0) { // Game has terminated.
+                    this.endOfGame(); // Determine & announce the winner.
+                }
+            } else if (!is1Human && !is2Human) {
+                // bot 1 turn
+                if (this.playerXTurn) {
+                    this.playerXBoxPane.setStyle("-fx-background-color: #90EE90; -fx-border-color: #D3D3D3;");
+                    this.playerOBoxPane.setStyle("-fx-background-color: WHITE; -fx-border-color: #D3D3D3;");
+                    this.buttons[i][j].setText("X");
+                    this.playerXScore++;
+
+                    this.updateGameBoard(i, j);
+                    this.playerXTurn = false;
+
+                    if (is2First) {
+                        this.roundsLeft--; // Decrement the number of rounds left after both Player X & Player O have
+                                           // played.
+                        this.roundsLeftLabel.setText(String.valueOf(this.roundsLeft));
+                    }
+
+                    if (is2First && this.roundsLeft == 0) {
+                        this.endOfGame();
+                    }
+
+                    // bot 2 turn
+                    this.moveBot();
+                } else {
+                    this.playerXBoxPane.setStyle("-fx-background-color: WHITE; -fx-border-color: #D3D3D3;");
+                    this.playerOBoxPane.setStyle("-fx-background-color: #90EE90; -fx-border-color: #D3D3D3;");
+                    this.buttons[i][j].setText("O");
+                    this.playerOScore++;
+
+                    this.updateGameBoard(i, j);
+                    this.playerXTurn = true;
+
+                    if (!is2First) {
+                        this.roundsLeft--; // Decrement the number of rounds left after both Player X & Player O have
+                                           // played.
+                        this.roundsLeftLabel.setText(String.valueOf(this.roundsLeft));
+                    }
+
+                    if (!is2First && this.roundsLeft == 0) { // Game has terminated.
+                        this.endOfGame(); // Determine & announce the winner.
+                    }
+
+                    // bot 1 turn
+                    this.moveBot();
                 }
             }
         }
@@ -322,36 +394,39 @@ public class OutputFrameController {
      *
      */
     private void endOfGame() {
-        // Player X is the winner.
-        if (this.playerXScore > this.playerOScore) {
-            new Alert(Alert.AlertType.INFORMATION,
-                    this.playerXName.getText() + " has won the game!").showAndWait();
-            this.playerXBoxPane.setStyle("-fx-background-color: CYAN; -fx-border-color: #D3D3D3;");
-            this.playerOBoxPane.setStyle("-fx-background-color: WHITE; -fx-border-color: #D3D3D3;");
-            this.playerXName.setText(this.playerXName.getText() + " (Winner!)");
-        }
+        Platform.runLater(() -> {
+            // Player X is the winner.
+            if (this.playerXScore > this.playerOScore) {
+                new Alert(Alert.AlertType.INFORMATION,
+                        this.playerXName.getText() + " has won the game!").showAndWait();
+                this.playerXBoxPane.setStyle("-fx-background-color: CYAN; -fx-border-color: #D3D3D3;");
+                this.playerOBoxPane.setStyle("-fx-background-color: WHITE; -fx-border-color: #D3D3D3;");
+                this.playerXName.setText(this.playerXName.getText() + " (Winner!)");
+            }
 
-        // Player O is the winner,
-        else if (this.playerOScore > this.playerXScore) {
-            new Alert(Alert.AlertType.INFORMATION,
-                    this.playerOName.getText() + " has won the game!").showAndWait();
-            this.playerXBoxPane.setStyle("-fx-background-color: WHITE; -fx-border-color: #D3D3D3;");
-            this.playerOBoxPane.setStyle("-fx-background-color: CYAN; -fx-border-color: #D3D3D3;");
-            this.playerOName.setText(this.playerOName.getText() + " (Winner!)");
-        }
+            // Player O is the winner,
+            else if (this.playerOScore > this.playerXScore) {
+                new Alert(Alert.AlertType.INFORMATION,
+                        this.playerOName.getText() + " has won the game!").showAndWait();
+                this.playerXBoxPane.setStyle("-fx-background-color: WHITE; -fx-border-color: #D3D3D3;");
+                this.playerOBoxPane.setStyle("-fx-background-color: CYAN; -fx-border-color: #D3D3D3;");
+                this.playerOName.setText(this.playerOName.getText() + " (Winner!)");
+            }
 
-        // Player X and Player O tie.
-        else {
-            new Alert(Alert.AlertType.INFORMATION,
-                    this.playerXName.getText() + " and " + this.playerOName.getText() + " have tied!").showAndWait();
-            this.playerXBoxPane.setStyle("-fx-background-color: ORANGE; -fx-border-color: #D3D3D3;");
-            this.playerOBoxPane.setStyle("-fx-background-color: ORANGE; -fx-border-color: #D3D3D3;");
-        }
+            // Player X and Player O tie.
+            else {
+                new Alert(Alert.AlertType.INFORMATION,
+                        this.playerXName.getText() + " and " + this.playerOName.getText() + " have tied!")
+                        .showAndWait();
+                this.playerXBoxPane.setStyle("-fx-background-color: ORANGE; -fx-border-color: #D3D3D3;");
+                this.playerOBoxPane.setStyle("-fx-background-color: ORANGE; -fx-border-color: #D3D3D3;");
+            }
 
-        // Disable the game board buttons to prevent from playing further.
-        for (int i = 0; i < ROW; i++)
-            for (int j = 0; j < COL; j++)
-                this.buttons[i][j].setDisable(true);
+            // Disable the game board buttons to prevent from playing further.
+            for (int i = 0; i < ROW; i++)
+                for (int j = 0; j < COL; j++)
+                    this.buttons[i][j].setDisable(true);
+        });
     }
 
     /**
@@ -387,30 +462,15 @@ public class OutputFrameController {
 
     private void moveBot() {
         int[] botMove;
-        if (playerXTurn) {
-            if (algorithm1.equals("Hill Climbing")) {
-                botMove = hillBot1.move(getBoardState(), 1); // Use hillBot1 for Player 1
-            } else if (algorithm1.equals("Minimax")) {
-                botMove = miniBot1.move(getBoardState(), 1); // Use miniBot1 for Player 1
-            } else if (algorithm1.equals("Simulated Annealing")) {
-                botMove = simulatedAnnealingBot1.move(getBoardState(), 1); // Use simulatedAnnealingBot for Player 2
-            } else if (algorithm1.equals("Genetic")) {
-                botMove = geneticBot1.move(getBoardState(), 1); // Use simulatedAnnealingBot for Player 2
-            } else {
-                botMove = new int[] { -1, -1 }; // Handle unknown algorithm
-            }
+
+        if (getPlayerID() == 1) {
+            botMove = bot1.move(getBoardState(), 1);
+        } else if (getPlayerID() == 2) {
+            botMove = bot2.move(getBoardState(), 2);
         } else {
-            if (algorithm2.equals("Hill Climbing")) {
-                botMove = hillBot2.move(getBoardState(), 2); // Use hillBot2 for Player 2
-            } else if (algorithm2.equals("Minimax")) {
-                botMove = miniBot2.move(getBoardState(), 2); // Use miniBot2 for Player 2
-            } else if (algorithm2.equals("Simulated Annealing")) {
-                botMove = simulatedAnnealingBot2.move(getBoardState(), 2); // Use simulatedAnnealingBot for Player 2
-            } else if (algorithm2.equals("Genetic")) {
-                botMove = geneticBot2.move(getBoardState(), 2); // Use simulatedAnnealingBot for Player 2
-            } else {
-                botMove = new int[] { -1, -1 }; // Handle unknown algorithm
-            }
+            new Alert(Alert.AlertType.ERROR, "Invalid Player ID. Exiting.").showAndWait();
+            System.exit(1);
+            return;
         }
 
         int i = botMove[0];
@@ -419,12 +479,19 @@ public class OutputFrameController {
         System.out.println(i);
         System.out.println(j);
 
-        if (i >= 0 && i < ROW && j >= 0 && j < COL && buttons[i][j].getText().isEmpty()) {
-            selectedCoordinates(i, j);
-        } else {
-            new Alert(Alert.AlertType.ERROR, "Bot Invalid Coordinates. Exiting.").showAndWait();
-            System.exit(1);
-        }
+        // Create a PauseTransition with a 1-second duration
+        PauseTransition pause = new PauseTransition(Duration.seconds(1));
+        pause.setOnFinished(event -> {
+            if (i >= 0 && i < ROW && j >= 0 && j < COL && buttons[i][j].getText().isEmpty()) {
+                selectedCoordinates(i, j);
+            } else {
+                new Alert(Alert.AlertType.ERROR, "Bot Invalid Coordinates. Exiting.").showAndWait();
+                System.exit(1);
+            }
+        });
+
+        // Start the pause transition
+        pause.play();
     }
 
     private int[][] getBoardState() {
@@ -445,39 +512,6 @@ public class OutputFrameController {
 
     private int getPlayerID() {
         return playerXTurn ? 1 : 2;
-    }
-
-    private void playBotVsBotGame() {
-        int[] botMove1;
-        int[] botMove2;
-        while (roundsLeft > 0) {
-            // Player 1's move (MinimaxBot 1)
-            botMove1 = miniBot1.move(getBoardState(), 1);
-
-            // Player 2's move (MinimaxBot 2)
-            botMove2 = miniBot2.move(getBoardState(), 2);
-
-            int i = botMove1[0];
-            int j = botMove1[1];
-            int k = botMove2[0];
-            int l = botMove2[1];
-
-
-            if (i >= 0 && i < ROW && j >= 0 && j < COL && buttons[i][j].getText().isEmpty()) {
-                selectedCoordinates(i, j);
-            } else {
-                new Alert(Alert.AlertType.ERROR, "Bot Invalid Coordinates. Exiting.").showAndWait();
-                System.exit(1);
-            }
-
-            if (k >= 0 && k < ROW && l >= 0 && l < COL && buttons[k][l].getText().isEmpty()) {
-                selectedCoordinates(k, l);
-            } else {
-                new Alert(Alert.AlertType.ERROR, "Bot Invalid Coordinates. Exiting.").showAndWait();
-                System.exit(1);
-            }
-
-        }
     }
 
     private void makeBotMove(int i, int j) {
