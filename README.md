@@ -16,34 +16,27 @@ To get started, please install the latest version of the Java Development Kit (J
 
 ### Deployment (IntelliJ)
 1. Clone the repository through Git by running the following command:<br>
-`git clone https://github.com/GAIB20/adversarial-adjacency-strategy-game.git`, or simply download the repository.
+`https://github.com/bernarduswillson/Tubes1_13521021.git`, or simply download the repository.
 2. Open the repository folder through IntelliJ.
 3. Set up the JDK by going to File -> Project Structure -> Project tab. In the Project tab, go to Project SDK, click New, and browse to the location of your JDK folder.
 4. NOTE: JavaFX has been removed starting from JDK 11, and it is now a standalone module. The JavaFX files needed to set up the Adjacency program are located in the repository folder itself. To set it up, go to File -> Project Structure -> Libraries tab.  In the Libraries tab, press the + button, browse to the "javafx-sdk/lib" folder in the repository, and add it to the list of libraries.
 5. IMPORTANT: Go to Run -> Edit Configurations, and go to the VM options. In this line, please add in the full path to the lib folder of the javafx-sdk folder on your own computer, and then add the following line <br> `--add-modules=javafx.controls,javafx.fxml`.<br><br> 
-For example, I added the following line to my VM options: `--module-path "C:\Jed's Work\CS Side Projects\Adjacency-Strategy-Game\javafx-sdk\lib" --add-modules=javafx.controls,javafx.fxml`
+For example, I added the following line to my VM options: `--module-path "C:\Ken's Work\CS Side Projects\Tubes1_13521021\javafx-sdk\lib" --add-modules=javafx.controls,javafx.fxml`
 6. Open the Main class in the IntelliJ file interface.
 
-### Deployment (Linux / WSL Windows 11 without IntelliJ)
-1. Make sure you have JDK 11 installed
+### Deployment (Windows)
+1. Make sure you have at least JDK 11 installed
 2. Clone the repo and cd to the folder
 ```
-git clone https://github.com/GAIB20/adversarial-adjacency-strategy-game.git
-cd adversarial-adjacency-strategy-game
+git clone https://github.com/bernarduswillson/Tubes1_13521021.git
+cd Tubes1_13521021
 ```
-1. Download JavaFX linux version
+3. Download JavaFX 17 for windows
+4. Extract the zip file and rename the folder to `javafx-sdk`
+5. Replace the `javafx-sdk` folder in the repo with the one you just downloaded
+6. Run the program
 ```
-wget https://download2.gluonhq.com/openjfx/11.0.2/openjfx-11.0.2_linux-x64_bin-sdk.zip
-unzip openjfx-11.0.2_linux-x64_bin-sdk.zip
-mv javafx-sdk-11.0.2 javafx-sdk-linux
-```
-1. Compile the program
-```
-javac -cp ./src --module-path "./javafx-sdk-linux/lib" --add-modules=javafx.controls,javafx.fxml src/*.java
-```
-1. Run the program
-```
-java -cp ./src --module-path "./javafx-sdk-linux/lib" --add-modules=javafx.controls,javafx.fxml Main
+./run.bat
 ```
 
 <hr>
